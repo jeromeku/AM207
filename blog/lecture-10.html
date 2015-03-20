@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:og="http://ogp.me/ns#"
+      xmlns:fb="https://www.facebook.com/2008/fbml">
+<head>
+    <title>Lecture 10</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Open Graph tags -->
+
+            <meta property="og:type" content="article"/>
+            <meta property="og:title" content="Lecture 10"/>
+            <meta property="og:url" content="http://iacs-courses.seas.harvard.edu/courses/am207/blog/lecture-10.html"/>
+            <meta property="og:description" content="The 10th lecture is about Data Augmentation"/>
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://iacs-courses.seas.harvard.edu/courses/am207/theme/css/bootstrap.flatly.min.css" type="text/css"/>
+    <link href="http://iacs-courses.seas.harvard.edu/courses/am207/theme/css/font-awesome.min.css" rel="stylesheet">
+    <link href="http://iacs-courses.seas.harvard.edu/courses/am207/theme/css/pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://iacs-courses.seas.harvard.edu/courses/am207/theme/css/style.css" type="text/css"/>
+    <!-- JavaScript plugins (requires jQuery) -->
+    <script src="http://code.jquery.com/jquery.js"></script>
+
+        <link href="http://iacs-courses.seas.harvard.edu/courses/am207/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="AM207 ATOM Feed"/>
+    
+        
+
+<style type="text/css">
+/* Overrides of notebook CSS for static HTML export */
+div.entry-content {
+  overflow: visible;
+  padding: 8px;
+}
+.input_area {
+  padding: 0.2em;
+}
+
+a.heading-anchor {
+ white-space: normal;
+}
+
+.rendered_html
+code {
+ font-size: .8em;
+}
+
+pre.ipynb {
+  color: black;
+  background: #f7f7f7;
+  border: none;
+  box-shadow: none;
+  margin-bottom: 0;
+  padding: 0;
+  margin: 0px;
+  font-size: 13px;
+}
+
+img.anim_icon{padding:0; border:0; vertical-align:middle; -webkit-box-shadow:none; -box-shadow:none}
+
+div.cell{width:100%;padding:5px 5px 5px 0px;margin:2px 0px 2px 7px;outline:none;}
+div.prompt{width:11ex;padding:0.4em;margin:0px;font-family:monospace;text-align:right;line-height:1.231em;display:none;}
+
+/*
+div.input_prompt{color:navy;border-top:1px solid transparent;}
+div.output_scroll{height:24em;width:100%;overflow:auto;border-radius:4px;-webkit-box-shadow:inset 0 2px 8px rgba(0, 0, 0, 0.8);-moz-box-shadow:inset 0 2px 8px rgba(0, 0, 0, 0.8);box-shadow:inset 0 2px 8px rgba(0, 0, 0, 0.8);}
+div.output_collapsed{margin:0px;padding:0px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-box-align:stretch;display:-moz-box;-moz-box-orient:vertical;-moz-box-align:stretch;display:box;box-orient:vertical;box-align:stretch;width:100%;}
+div.output_prompt{color:darkred;}*/
+</style>
+
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+<script type="text/javascript">
+init_mathjax = function() {
+    if (window.MathJax) {
+        // MathJax loaded
+        MathJax.Hub.Config({
+        	config: ['MMLorHTML.js'], 
+            jax: ['input/TeX','output/HTML-CSS'],
+            TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+            extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js'],
+            tex2jax: {
+                inlineMath: [ ['$','$'], ['\\(','\\)'] ],
+                displayMath: [ ['$$','$$'], ['\\[','\\]'] ],
+                processEscapes: true
+            },
+            //displayAlign: 'left', // Change this to 'center' to center equations.
+            "HTML-CSS": {
+                styles: { '.MathJax .mo, .MathJax .mi': {color: 'black ! important'}}
+            }
+        });
+        MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+    }
+}
+init_mathjax();
+</script>
+
+</head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://iacs-courses.seas.harvard.edu/courses/am207/index.html" class="navbar-brand">AM207</a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                    <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/schedule.html">Schedule</a></li>
+                    <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/syllabus.html">Syllabus</a></li>
+                    <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/policies.html">Policies</a></li>
+                    <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/resources.html">Resources</a></li>
+                    <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/contact.html">Contact</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/archives.html"><i class="icon-th-list"></i>Archives</a></li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</nav>
+<!-- /.navbar -->
+<div class="container">
+    <div class="row">
+        <div class="col-lg-9">
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h2>
+                    <a href="http://iacs-courses.seas.harvard.edu/courses/am207/blog/lecture-10.html"
+                       rel="bookmark"
+                       title="Permalink to Lecture 10">
+                        Lecture 10
+                    </a>
+                </h2>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="icon-calendar"></i>Thu 27 February 2014
+    </span>
+
+    <!--span class="label label-default">Category</span>
+    <a href="http://iacs-courses.seas.harvard.edu/courses/am207/category/misc.html">misc</a-->
+
+
+<span class="label label-default">Tags</span>
+	<a href="http://iacs-courses.seas.harvard.edu/courses/am207/tag/lectures.html">lectures</a>
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <p>You can download this lecture <a href="{filename}/../../notebooks/Lecture10_DataAugmentation1.ipynb">here</a>.</p>
+<p>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="lecture-10-data-augmentation">Lecture 10: Data Augmentation</h1>
+<p>AM207: Pavlos Protopapas, Harvard University</p>
+<p>Feb 27 2014</p>
+<hr>
+</hr></div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Data-Augmentation">Data Augmentation<a class="anchor-link" href="#Data-Augmentation">¶</a></h1>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The term data augmentation refers to methods for constructing iterative algorithms via the introduction of unobserved data or latent variables. For deterministic algorithms, the method was popularized in the general statistical community by the seminal paper of Dempster, Laird, and Rubin (1977) on the EM algorithm for maximizing a likelihood function or more generally a posterior density. For stochastic algorithms, the method was popularized in the statistical literature by Tanner and Wong's (1987) <em>Data Augmentation algorithm for posterior sampling</em>, and in the physics literature by Swendsen and Wang's (1987) algorithm for sampling from Ising and Potts models and it generalizations; in the physics literature, the method of data augmentation is referred to as the method of auxiliary variables. Data augmentation schemes were used by Tanner and Wong to make simulation feasible and simple, while auxiliary variables were adopted by Swendsen and Wang to improve the speed of iterative simulation. In general, however, constructing data augmentation schemes that result in both simple and fast algorithms is a matter of art in that successful strategies vary greatly with the observed-data models being considered. </p>
+<p>Lets go back to our usual goal. Find the value of an integral </p>
+<p>$$  I=\int f(x) p(x) dx  $$</p>
+<p>(and other integrals that use $p(x)$ as a pdf) which cannot be computed analytically. </p>
+<p>The basic idea is, if it is difficult to simulate from $p(x)$ using the traditional methods we've learned so far, it is often possible to find a joint pdf 
+that:</p>
+<p>$$ \int p(x,y)\, dy = p(x)  $$</p>
+<p>and simulating from the associated conditional pdfs, $p(x|y)$ and $p(y|x)$ is easy.</p>
+<p>The DA algorithm is based on this joint pdf, and we <em>marginalize</em> over the <strong>augmenting variable</strong> $y$ to obtain samples for $p(x)$.</p>
+<p>The first property allows for a construction of Markov chain (see below for the proof). </p>
+<p>The simplest form of DA algorithm takes the following form:</p>
+<ol>
+<li>Draw $Y\sim p_{Y|X}(.|x)$ and call the observed value y</li>
+<li>Draw $X_{n+1} \sim p_{X|Y}(.|y)$  </li>
+</ol>
+<p>The genesis of the name data augmentation algorithm appears to be Tanner and Wong
+(1987) who used it to describe an iterative algorithm for approximating complex posterior
+distributions. However, it does not appear to be the case
+that Tanner and Wong (1987) ''invented'' the DA algorithm (as I have defined it here), since other researchers, such as Swendsen and Wang (1987) were using it at about the same time. </p>
+<p>Lets do one simple examples and then show the proof of Markov chain. </p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell">
+<div class="input">
+<div class="prompt input_prompt">
+In [38]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="o">%</span><span class="k">matplotlib</span> <span class="n">inline</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy</span> <span class="kn">as</span> <span class="nn">sp</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s">'display.width'</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s">'display.max_columns'</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="kn">as</span> <span class="nn">sns</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="examples">Examples</h2>
+<h3 id="example-1">Example 1</h3>
+<p>Suppose that $p_X$ is the standard normal density, i.e., $p(x) = e^{-x^2/2}/\sqrt{2\pi}$.
+Obviously, there is nothing difficult about this density. Nevertheless, it is best to start with something simple in which the basic ideas of the algorithm are not overshadowed by the complexity of the target density. Take </p>
+<p>$$p(x, y) = 1/(\sqrt{2\pi}) \exp{\left\{-(x^2 - \sqrt{2} xy + y^2) \right\} } $$</p>
+<p>which is a bivariate normal density with means equal to zero, variances equal
+to one, and correlation equal to $1/\sqrt{2}$. The two conditionals are  normal, as we can see by completing the square and neglecting the part of the function that only depends on the variable not being conditioned upon ($e^{-y^2 }$ and $e^{-x^2 }$ respectively for the conditionals below).</p>
+<p>$$ 
+Y|X = x \, \, \sim N(x/\sqrt{2}, 1/2) \,\,\,  \rm{and} \,\,\, X|Y= y \,\,\sim N(y/\sqrt{2}, 1/2) $$</p>
+<p>The x-marginal is </p>
+<p>$$\propto e^{-x^{2}/2} \int e^{-(y-x/\sqrt{2})^2 }dy $$ </p>
+<p>and clearly thus gets back the old normal we want to draw from.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell">
+<div class="input">
+<div class="prompt input_prompt">
+In [44]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="n">N</span><span class="o">=</span><span class="mi">100000</span>
+<span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+<span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span> <span class="c"># INITIALIZE</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">N</span><span class="p">):</span>
+    <span class="n">Y</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">Y</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="mf">0.5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell">
+<div class="input">
+<div class="prompt input_prompt">
+In [45]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">normed</span><span class="o">=</span><span class="bp">True</span><span class="p">);</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">'x'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area"><div class="prompt output_prompt">
+    Out[45]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+<pre>
+&lt;matplotlib.text.Text at 0x10d257e90&gt;
+</pre>
+</div>
+</div>
+<div class="output_area"><div class="prompt"></div>
+<div class="box-flex1 output_subarea output_display_data">
+<img src="data:image/png;base64,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
+QmCC
+">
+</img></div>
+</div>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="example-2">Example 2</h3>
+<p>Suppose $p(x) = 3\,x^2$ from $0&lt; x &lt; 1$. We take $p(x,y) = 3x$  for 
+$y &lt; x &lt; 1$ and $0 &lt; y &lt; x$ then the x-marginal is $p_X(x)=3x^2$. The two conditional densities are given by </p>
+<p>$$ p(y|x)  = \frac{1}{x}  \, \, \, \rm{for} \,\,\, 0 &lt; y &lt; x $$<br>and 
+$$ p(x|y)  = \frac{2x}{1-y^2}  \, \, \, \rm{for} \,\,\,y &lt; x &lt; 1 $$ </br></p>
+<p>Simulating from these conditionals is straightforward using inverse transformations. </p>
+<p>$$ Y|X = x  \,\, \sim x \, U $$ </p>
+<p>$$ X|Y = y  \,\, \sim \sqrt{ ( 1-y^2)\,U+y^2} $$</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell">
+<div class="input">
+<div class="prompt input_prompt">
+In [41]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="n">N</span><span class="o">=</span><span class="mi">100000</span>
+<span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+<span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+<span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.1</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span>  <span class="c">#initial</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">N</span><span class="p">):</span>
+    <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span>
+    <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="mi">1</span><span class="o">-</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span> <span class="o">+</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell">
+<div class="input">
+<div class="prompt input_prompt">
+In [42]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">normed</span><span class="o">=</span><span class="bp">True</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">'x'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area"><div class="prompt output_prompt">
+    Out[42]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+<pre>
+&lt;matplotlib.text.Text at 0x10d126250&gt;
+</pre>
+</div>
+</div>
+<div class="output_area"><div class="prompt"></div>
+<div class="box-flex1 output_subarea output_display_data">
+<img src="data:image/png;base64,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
+">
+</img></div>
+</div>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="example-3">Example 3</h3>
+<p>Suppose that $p(x)$ is a Student's t density with 4 degrees of freedom
+$$ p(x) = \frac{3}{8} ( 1+ \frac{x^2}{4})^{-5/2} $$</p>
+<p>If we take </p>
+<p>$$ p(x,y) = \frac{4}{\sqrt{2\pi}} y^{3/2} \exp{ \left\{  -y \left( \frac{x^2}{2}+2\right) \right\} } $$</p>
+<p>for $0 &lt; y &lt; \infty$, 
+then we can show that </p>
+<p>$$X|Y = y \,\,  \sim N(0, 1/y) $$ and that 
+$$Y|X = x \,\, \sim \rm{Gamma}(5/2, x^2/2+2)$$</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell">
+<div class="input">
+<div class="prompt input_prompt">
+In [43]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="c">#We leave the implementation of this as an exercise</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="data-augmentation-is-a-markov-chain-monte-carlo">Data Augmentation is a Markov Chain Monte Carlo</h2>
+<p>Now lets look at the DA closer. Let $p(y) = \int p(x,y) dx$.
+Now lets define a function </p>
+<p>$$ k(x'|x) = \int_Y p(x'|y) \, p(y|x)\, dy $$</p>
+<p>And since we are dealing with probability densities, $k$ is always positive.</p>
+<p>Also note </p>
+<p>\begin{eqnarray}
+  \int k(x'|x) dx' = \int_{X} \int_Y p(x'|y) \, p(y|x) \, dy \, dx' = \int_Y p(y|x) \left[ \int_X p(x'|y) dx' \right] dy  = \int_Y p(y|x) dy  = 1
+  \end{eqnarray}</p>
+<p>Therefore for each fixed $x$, $k(x'|x)$ is a nonnegative and integrates to 1. The function $k$ therefore
+could be a Markov Chain transition density and if the current state is $x_n$ then the density of the next state 
+is $k(.|x_n)$. </p>
+<p>Also  note that the $k(x'|x)\, p(x)$ is symmetric 
+in $(x,x')$. </p>
+<p>$$ k(x'|x)\, p(x) = p(x) \int_Y p(x'|y) \, p(y|x) \, dy = \int_Y \frac{p(x',y)\, p(x,y) }{p(y)} \, dy. $$</p>
+<p>The rhs is symmetric in  $(x,x')$ and so is $ k(x'|x) p(x)$. This also    implies that the Markov chain generated with transition probability $k(x'|x)$ is reversible.  </p>
+<p>Integrating both sides with respect to x </p>
+<p>$$ \int_X k(x'|x)\, p(x) dx  = p(x') $$</p>
+<p>This implies that when $X_0 \sim p(x)$ then $X_1$ is also $p(x)$. Actually
+since $X$ is a time homogenous Markov chain, then 
+$X_n\sim p(x)$ and $X_{n+1} \sim p(x)$. </p>
+<p>Now consider the practical issue of simulating the Markov chain $X$. Given that the current
+state of the chain is $X_n = x$, how do we draw $X_{n+1}$ from the $k(.|x)$? The answer is
+based on a sequential simulation technique that we now describe. </p>
+<p>Suppose we would like
+to simulate a random vector from some pdf, $p_U(u)$, but we cannot do this directly. Suppose
+further that $p_U$ is the u-marginal of the joint pdf $p_{U,V} (u, v)$ and that we have the ability to
+make draws from $p_V(v)$ and from $p_{U,V} (u,v)$ for fixed $v$. If we draw $V\sim p_V(.)$, and then,
+conditional on $V = v$, we draw $U \sim p_{U,V}(.|v)$, then the observed pair, $(u, v)$, is a draw from
+$p_{U,V}$, which means that $u$ is a draw from $f_U$. We now can 
+explain how it is used to simulate from $k(.|x)$.</p>
+<p>Define </p>
+<p>$$ h(x',y| x) = p(x'|y) p(y|x) $$</p>
+<p>We apply the procedure above with $k(.|x)$ and $h(.,.|x)$ playing the roles of 
+$p_U(.)$ and $p_{U,V}(.,.)$ respectively. We of course need the marginal of
+$h(x', y|x)$ which is $p(y|x)$ and the conditional density of $X'$ given $Y=y$  which is</p>
+<p>$$ \frac{ h(x',y|x) }{p(y|x)} = p(x'|y) $$</p>
+<p>which gives us the procedure above:</p>
+<ol>
+<li>Draw $Y\sim p_{Y|X}(.|x)$ and call the observed value y</li>
+<li>Draw $X_{n+1} \sim p_{X|Y}(.|y)$  </li>
+</ol>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell">
+<div class="input">
+<div class="prompt input_prompt">
+In [43]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre>
+</pre></div>
+</div>
+</div>
+</div></p>
+            </div>
+            <!-- /.entry-content -->
+        </article>
+    </section>
+
+        </div>
+        <div class="col-lg-3 well well-sm" id="sidebar">
+<aside>
+    <section>
+        <ul class="list-group list-group-flush">
+
+
+                <li class="list-group-item"><h4><i class="icon-home icon-large"></i>Class Material</h4></li>
+                    <li class="list-group-item">
+                       <a href="http://iacs-courses.seas.harvard.edu/courses/am207/tag/homeworks.html">
+                           <i class="icon-folder-open icon-large"></i>homeworks
+                       </a>
+                   </li>
+                    <li class="list-group-item">
+                       <a href="http://iacs-courses.seas.harvard.edu/courses/am207/tag/labs.html">
+                           <i class="icon-folder-open icon-large"></i>labs
+                       </a>
+                   </li>
+                    <li class="list-group-item">
+                       <a href="http://iacs-courses.seas.harvard.edu/courses/am207/tag/projects.html">
+                           <i class="icon-folder-open icon-large"></i>projects
+                       </a>
+                   </li>
+                    <li class="list-group-item">
+                       <a href="http://iacs-courses.seas.harvard.edu/courses/am207/tag/lectures.html">
+                           <i class="icon-folder-open icon-large"></i>lectures
+                       </a>
+                   </li>
+
+            <!--li class="list-group-item"><a href="http://iacs-courses.seas.harvard.edu/courses/am207/tags.html"><h4><i class="icon-tags icon-large"></i>Tags</h4></a></li-->
+                <li class="list-group-item"><h4><i class="icon-external-link icon-large"></i>Class Links</h4></li>
+                    <li class="list-group-item"><a href="https://piazza.com/harvard/spring2014/am207/home"><i class="icon-external-link"></i>Piazza</a></li>
+                    <li class="list-group-item"><a href="http://cm.dce.harvard.edu/2014/02/24104/publicationListing.shtml"><i class="icon-external-link"></i>Videos</a></li>
+                    <li class="list-group-item"><a href="http://isites.harvard.edu/icb/icb.do?keyword=k102129&login=yes"><i class="icon-external-link"></i>ISite</a></li>
+                <li class="list-group-item"><h4><i class="icon-external-link icon-large"></i>Other Links</h4></li>
+                    <li class="list-group-item"><a href="http://docs.scipy.org/doc/numpy/reference/"><i class="icon-external-link"></i>Numpy</a></li>
+                    <li class="list-group-item"><a href="http://docs.scipy.org/doc/scipy/reference/"><i class="icon-external-link"></i>Scipy</a></li>
+                    <li class="list-group-item"><a href="http://pandas.pydata.org/pandas-docs/dev/"><i class="icon-external-link"></i>Pandas</a></li>
+                    <li class="list-group-item"><a href="http://matplotlib.org/api/index.html"><i class="icon-external-link"></i>Matplotlib</a></li>
+                    <li class="list-group-item"><a href="https://github.com/pymc-devs/pymc"><i class="icon-external-link"></i>PyMC3</a></li>
+                    <li class="list-group-item"><a href="http://iacs.seas.harvard.edu"><i class="icon-external-link"></i>IACS</a></li>
+        </ul>
+    </section>
+</aside>        </div>
+    </div>
+</div>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="http://iacs-courses.seas.harvard.edu/courses/am207/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="http://iacs-courses.seas.harvard.edu/courses/am207/theme/js/respond.min.js"></script>
+</body>
+</html>

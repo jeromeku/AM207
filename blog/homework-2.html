@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:og="http://ogp.me/ns#"
+      xmlns:fb="https://www.facebook.com/2008/fbml">
+<head>
+    <title>Homework 2</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Open Graph tags -->
+
+            <meta property="og:type" content="article"/>
+            <meta property="og:title" content="Homework 2"/>
+            <meta property="og:url" content="http://iacs-courses.seas.harvard.edu/courses/am207/blog/homework-2.html"/>
+            <meta property="og:description" content="Second homework on variance reduction and bayesian methods"/>
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://iacs-courses.seas.harvard.edu/courses/am207/theme/css/bootstrap.flatly.min.css" type="text/css"/>
+    <link href="http://iacs-courses.seas.harvard.edu/courses/am207/theme/css/font-awesome.min.css" rel="stylesheet">
+    <link href="http://iacs-courses.seas.harvard.edu/courses/am207/theme/css/pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://iacs-courses.seas.harvard.edu/courses/am207/theme/css/style.css" type="text/css"/>
+    <!-- JavaScript plugins (requires jQuery) -->
+    <script src="http://code.jquery.com/jquery.js"></script>
+
+        <link href="http://iacs-courses.seas.harvard.edu/courses/am207/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="AM207 ATOM Feed"/>
+    
+        
+
+<style type="text/css">
+/* Overrides of notebook CSS for static HTML export */
+div.entry-content {
+  overflow: visible;
+  padding: 8px;
+}
+.input_area {
+  padding: 0.2em;
+}
+
+a.heading-anchor {
+ white-space: normal;
+}
+
+.rendered_html
+code {
+ font-size: .8em;
+}
+
+pre.ipynb {
+  color: black;
+  background: #f7f7f7;
+  border: none;
+  box-shadow: none;
+  margin-bottom: 0;
+  padding: 0;
+  margin: 0px;
+  font-size: 13px;
+}
+
+img.anim_icon{padding:0; border:0; vertical-align:middle; -webkit-box-shadow:none; -box-shadow:none}
+
+div.cell{width:100%;padding:5px 5px 5px 0px;margin:2px 0px 2px 7px;outline:none;}
+div.prompt{width:11ex;padding:0.4em;margin:0px;font-family:monospace;text-align:right;line-height:1.231em;display:none;}
+
+/*
+div.input_prompt{color:navy;border-top:1px solid transparent;}
+div.output_scroll{height:24em;width:100%;overflow:auto;border-radius:4px;-webkit-box-shadow:inset 0 2px 8px rgba(0, 0, 0, 0.8);-moz-box-shadow:inset 0 2px 8px rgba(0, 0, 0, 0.8);box-shadow:inset 0 2px 8px rgba(0, 0, 0, 0.8);}
+div.output_collapsed{margin:0px;padding:0px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-box-align:stretch;display:-moz-box;-moz-box-orient:vertical;-moz-box-align:stretch;display:box;box-orient:vertical;box-align:stretch;width:100%;}
+div.output_prompt{color:darkred;}*/
+</style>
+
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+<script type="text/javascript">
+init_mathjax = function() {
+    if (window.MathJax) {
+        // MathJax loaded
+        MathJax.Hub.Config({
+        	config: ['MMLorHTML.js'], 
+            jax: ['input/TeX','output/HTML-CSS'],
+            TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+            extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js'],
+            tex2jax: {
+                inlineMath: [ ['$','$'], ['\\(','\\)'] ],
+                displayMath: [ ['$$','$$'], ['\\[','\\]'] ],
+                processEscapes: true
+            },
+            //displayAlign: 'left', // Change this to 'center' to center equations.
+            "HTML-CSS": {
+                styles: { '.MathJax .mo, .MathJax .mi': {color: 'black ! important'}}
+            }
+        });
+        MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+    }
+}
+init_mathjax();
+</script>
+
+</head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://iacs-courses.seas.harvard.edu/courses/am207/index.html" class="navbar-brand">AM207</a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                    <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/schedule.html">Schedule</a></li>
+                    <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/syllabus.html">Syllabus</a></li>
+                    <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/policies.html">Policies</a></li>
+                    <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/resources.html">Resources</a></li>
+                    <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/contact.html">Contact</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/archives.html"><i class="icon-th-list"></i>Archives</a></li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</nav>
+<!-- /.navbar -->
+<div class="container">
+    <div class="row">
+        <div class="col-lg-9">
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h2>
+                    <a href="http://iacs-courses.seas.harvard.edu/courses/am207/blog/homework-2.html"
+                       rel="bookmark"
+                       title="Permalink to Homework 2">
+                        Homework 2
+                    </a>
+                </h2>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="icon-calendar"></i>Thu 13 February 2014
+    </span>
+
+    <!--span class="label label-default">Category</span>
+    <a href="http://iacs-courses.seas.harvard.edu/courses/am207/category/misc.html">misc</a-->
+
+
+<span class="label label-default">Tags</span>
+	<a href="http://iacs-courses.seas.harvard.edu/courses/am207/tag/homeworks.html">homeworks</a>
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <p>You can download this homework <a href="{filename}/../../notebooks/HW2.ipynb">here</a>.</p>
+<p>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="AM-207:-Homework-2"><strong>AM 207</strong>: Homework 2<a class="anchor-link" href="#AM-207:-Homework-2">¶</a></h1>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<p>Pavlos Protopapas <br>
+Handed out: Thursday, February 13th, 2014<br>
+Due: 11.59 P.M. Wednesday February 19th, 2014</br></br></p>
+<p><strong>Instructions</strong>:</p>
+<ul>
+<li><p>Upload your answers in an ipython notebook to the dropbox.</p>
+</li>
+<li><p>Your individual submissions use the following filenames: AM207_YOURNAME_HM2.ipynb</p>
+</li>
+<li><p>Your code should be in code cells as part of your ipython notebook. Do not use a different language (or format) unless you get permission from the TFs. If you use any special libraries you must include them with your code (program should run as is). </p>
+</li>
+<li><p>If you have multiple files (e.g. you've added code files and images) create a tarball for all files in a single file and name it: AM207_YOURNAME_HM2.tar or AM207_YOURNAME_HM2.zip</p>
+</li>
+</ul>
+<hr>
+</hr></hr></div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Question-1:--The-Asteroid-Belt">Question 1:  The Asteroid Belt<a class="anchor-link" href="#Question-1:--The-Asteroid-Belt">¶</a></h3>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The distribution of the inclination angles, $\theta$,of a particular asteroid population
+is given by: $P(\theta) \sim \sin \theta$ from $0&lt; \theta&lt; \pi/2$ and $P(\theta )=0$ otherwise. The inclination angle is defined as the angle between the plane of the orbit of the asteroid and the ecliptic which is the plane containing Earth's orbital path.</p>
+<p>(a) Calculate the second moment of this function using the standard Monte Carlo method 
+(a.k.a mean Monte Carlo) and $N=1000$.  That is calculate the integral, </p>
+<p>$I = \int_0^{\pi/2} \theta^2 \sin \theta d\, \theta$</p>
+<p>Repeat the simulation for 100 times and report the mean value of $I$ and its variance. <br/></p>
+<p>(b) Use control variate(s) to reduce the variance of the estimation of $I$ using 
+$N=1000$ and 100 simulations as in part (a). You must reduce the variance by 60% at the very least, but that will cost you some points. If you reduce the variance by 80% you will get full points.</p>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Question-3:--Bayesian-theory-is-infectious">Question 3:  Bayesian theory is infectious<a class="anchor-link" href="#Question-3:--Bayesian-theory-is-infectious">¶</a></h3>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>A rare genetic disease has been discovered, and it has been determined
+that every 1 in a million people are carriers. Luckily, scientists
+have produced a genetic test that is 100% accurate in the presense of
+the disease. However, the test also produces a false positive 0.01%
+of the time. Having recently learned Bayes' theorem,
+you reach the conculsion that even taking genetic test is effectively pointless. Why?</p>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Question-4:-The-infamous-O-ring">Question 4: The infamous O-ring<a class="anchor-link" href="#Question-4:-The-infamous-O-ring">¶</a></h3>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In 1986, the space shuttle Challenger exploded during take off,
+killing the seven astronauts aboard. It is believed that the
+explosion was caused by the failure of an O-ring (a rubber ring that
+seals parts of the solid fuel rockets together), and that the
+failure was caused by the cold weather at the time of launch (31F).</p>
+<p>In the file <a href="./files/chall.txt">chall.txt</a>, you will find temperature (in
+Fahrenheit) and failure data from 23 shuttle launches, where 1
+stands for O-ring failure and 0 no failure.  We assume that the
+observed temperatures are fixed and that, at temperature $t$, an
+O-ring fails with probability $f(\theta_{1}+\theta_{2}t)$
+conditionally on $\Theta = (\theta_1, \theta_2)$.</p>
+<p>Here, $f(z) = 1/(1 + \exp(-z))$ is the logistic function.</p>
+<p>(a) Based on your own common sense knowledge, suggest a prior distribution for the regression parameters ($\theta_1, \theta_2$), and explain your choice of prior. <br/></p>
+<p>(b) Write a script that samples from the posterior distribution of $\Theta$ using the rejection method. <br/></p>
+<p>(c) Compute a Bayesian posterior probability for an O-ring failure at $t = 31F$. <br/></p>
+<p>(d) The day before a new launch, meteorologists predict that the temperature will be $T \sim N(68, 1)$ during take-off. Estimate the probability for an O-ring failure during this take-off.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell">
+<div class="input">
+<div class="prompt input_prompt">
+In []:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre>
+</pre></div>
+</div>
+</div>
+</div></p>
+            </div>
+            <!-- /.entry-content -->
+        </article>
+    </section>
+
+        </div>
+        <div class="col-lg-3 well well-sm" id="sidebar">
+<aside>
+    <section>
+        <ul class="list-group list-group-flush">
+
+
+                <li class="list-group-item"><h4><i class="icon-home icon-large"></i>Class Material</h4></li>
+                    <li class="list-group-item">
+                       <a href="http://iacs-courses.seas.harvard.edu/courses/am207/tag/homeworks.html">
+                           <i class="icon-folder-open icon-large"></i>homeworks
+                       </a>
+                   </li>
+                    <li class="list-group-item">
+                       <a href="http://iacs-courses.seas.harvard.edu/courses/am207/tag/labs.html">
+                           <i class="icon-folder-open icon-large"></i>labs
+                       </a>
+                   </li>
+                    <li class="list-group-item">
+                       <a href="http://iacs-courses.seas.harvard.edu/courses/am207/tag/projects.html">
+                           <i class="icon-folder-open icon-large"></i>projects
+                       </a>
+                   </li>
+                    <li class="list-group-item">
+                       <a href="http://iacs-courses.seas.harvard.edu/courses/am207/tag/lectures.html">
+                           <i class="icon-folder-open icon-large"></i>lectures
+                       </a>
+                   </li>
+
+            <!--li class="list-group-item"><a href="http://iacs-courses.seas.harvard.edu/courses/am207/tags.html"><h4><i class="icon-tags icon-large"></i>Tags</h4></a></li-->
+                <li class="list-group-item"><h4><i class="icon-external-link icon-large"></i>Class Links</h4></li>
+                    <li class="list-group-item"><a href="https://piazza.com/harvard/spring2014/am207/home"><i class="icon-external-link"></i>Piazza</a></li>
+                    <li class="list-group-item"><a href="http://cm.dce.harvard.edu/2014/02/24104/publicationListing.shtml"><i class="icon-external-link"></i>Videos</a></li>
+                    <li class="list-group-item"><a href="http://isites.harvard.edu/icb/icb.do?keyword=k102129&login=yes"><i class="icon-external-link"></i>ISite</a></li>
+                <li class="list-group-item"><h4><i class="icon-external-link icon-large"></i>Other Links</h4></li>
+                    <li class="list-group-item"><a href="http://docs.scipy.org/doc/numpy/reference/"><i class="icon-external-link"></i>Numpy</a></li>
+                    <li class="list-group-item"><a href="http://docs.scipy.org/doc/scipy/reference/"><i class="icon-external-link"></i>Scipy</a></li>
+                    <li class="list-group-item"><a href="http://pandas.pydata.org/pandas-docs/dev/"><i class="icon-external-link"></i>Pandas</a></li>
+                    <li class="list-group-item"><a href="http://matplotlib.org/api/index.html"><i class="icon-external-link"></i>Matplotlib</a></li>
+                    <li class="list-group-item"><a href="https://github.com/pymc-devs/pymc"><i class="icon-external-link"></i>PyMC3</a></li>
+                    <li class="list-group-item"><a href="http://iacs.seas.harvard.edu"><i class="icon-external-link"></i>IACS</a></li>
+        </ul>
+    </section>
+</aside>        </div>
+    </div>
+</div>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="http://iacs-courses.seas.harvard.edu/courses/am207/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="http://iacs-courses.seas.harvard.edu/courses/am207/theme/js/respond.min.js"></script>
+</body>
+</html>

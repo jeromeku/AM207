@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:og="http://ogp.me/ns#"
+      xmlns:fb="https://www.facebook.com/2008/fbml">
+<head>
+    <title>Homework 5</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Open Graph tags -->
+
+            <meta property="og:type" content="article"/>
+            <meta property="og:title" content="Homework 5"/>
+            <meta property="og:url" content="http://iacs-courses.seas.harvard.edu/courses/am207/blog/homework-5.html"/>
+            <meta property="og:description" content="Homework on Slice Sampling, HMC, and the like"/>
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://iacs-courses.seas.harvard.edu/courses/am207/theme/css/bootstrap.flatly.min.css" type="text/css"/>
+    <link href="http://iacs-courses.seas.harvard.edu/courses/am207/theme/css/font-awesome.min.css" rel="stylesheet">
+    <link href="http://iacs-courses.seas.harvard.edu/courses/am207/theme/css/pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://iacs-courses.seas.harvard.edu/courses/am207/theme/css/style.css" type="text/css"/>
+    <!-- JavaScript plugins (requires jQuery) -->
+    <script src="http://code.jquery.com/jquery.js"></script>
+
+        <link href="http://iacs-courses.seas.harvard.edu/courses/am207/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="AM207 ATOM Feed"/>
+    
+        
+
+<style type="text/css">
+/* Overrides of notebook CSS for static HTML export */
+div.entry-content {
+  overflow: visible;
+  padding: 8px;
+}
+.input_area {
+  padding: 0.2em;
+}
+
+a.heading-anchor {
+ white-space: normal;
+}
+
+.rendered_html
+code {
+ font-size: .8em;
+}
+
+pre.ipynb {
+  color: black;
+  background: #f7f7f7;
+  border: none;
+  box-shadow: none;
+  margin-bottom: 0;
+  padding: 0;
+  margin: 0px;
+  font-size: 13px;
+}
+
+img.anim_icon{padding:0; border:0; vertical-align:middle; -webkit-box-shadow:none; -box-shadow:none}
+
+div.cell{width:100%;padding:5px 5px 5px 0px;margin:2px 0px 2px 7px;outline:none;}
+div.prompt{width:11ex;padding:0.4em;margin:0px;font-family:monospace;text-align:right;line-height:1.231em;display:none;}
+
+/*
+div.input_prompt{color:navy;border-top:1px solid transparent;}
+div.output_scroll{height:24em;width:100%;overflow:auto;border-radius:4px;-webkit-box-shadow:inset 0 2px 8px rgba(0, 0, 0, 0.8);-moz-box-shadow:inset 0 2px 8px rgba(0, 0, 0, 0.8);box-shadow:inset 0 2px 8px rgba(0, 0, 0, 0.8);}
+div.output_collapsed{margin:0px;padding:0px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-box-align:stretch;display:-moz-box;-moz-box-orient:vertical;-moz-box-align:stretch;display:box;box-orient:vertical;box-align:stretch;width:100%;}
+div.output_prompt{color:darkred;}*/
+</style>
+
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+<script type="text/javascript">
+init_mathjax = function() {
+    if (window.MathJax) {
+        // MathJax loaded
+        MathJax.Hub.Config({
+        	config: ['MMLorHTML.js'], 
+            jax: ['input/TeX','output/HTML-CSS'],
+            TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+            extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js'],
+            tex2jax: {
+                inlineMath: [ ['$','$'], ['\\(','\\)'] ],
+                displayMath: [ ['$$','$$'], ['\\[','\\]'] ],
+                processEscapes: true
+            },
+            //displayAlign: 'left', // Change this to 'center' to center equations.
+            "HTML-CSS": {
+                styles: { '.MathJax .mo, .MathJax .mi': {color: 'black ! important'}}
+            }
+        });
+        MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+    }
+}
+init_mathjax();
+</script>
+
+</head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://iacs-courses.seas.harvard.edu/courses/am207/index.html" class="navbar-brand">AM207</a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                    <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/schedule.html">Schedule</a></li>
+                    <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/syllabus.html">Syllabus</a></li>
+                    <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/policies.html">Policies</a></li>
+                    <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/resources.html">Resources</a></li>
+                    <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/contact.html">Contact</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/archives.html"><i class="icon-th-list"></i>Archives</a></li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</nav>
+<!-- /.navbar -->
+<div class="container">
+    <div class="row">
+        <div class="col-lg-9">
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h2>
+                    <a href="http://iacs-courses.seas.harvard.edu/courses/am207/blog/homework-5.html"
+                       rel="bookmark"
+                       title="Permalink to Homework 5">
+                        Homework 5
+                    </a>
+                </h2>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="icon-calendar"></i>Sun 09 March 2014
+    </span>
+
+    <!--span class="label label-default">Category</span>
+    <a href="http://iacs-courses.seas.harvard.edu/courses/am207/category/misc.html">misc</a-->
+
+
+<span class="label label-default">Tags</span>
+	<a href="http://iacs-courses.seas.harvard.edu/courses/am207/tag/homeworks.html">homeworks</a>
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <p>You can download this homework <a href="{filename}/../../notebooks/HW5.ipynb">here</a>.</p>
+<p>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="AM-207:-Homework-5"><strong>AM 207</strong>: Homework 5<a class="anchor-link" href="#AM-207:-Homework-5">¶</a></h1>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<p>Pavlos Protopapas <br>
+Handed out: Friday, March 7, 2014<br>
+Due: Friday March 14, 2014</br></br></p>
+<p><strong>Instructions</strong>:</p>
+<ul>
+<li><p>Upload your answers in an ipython notebook to the dropbox.</p>
+</li>
+<li><p>Your individual submissions use the following filenames: AM207_YOURNAME_HM5.ipynb</p>
+</li>
+<li><p>Your code should be in code cells as part of your ipython notebook. Do not use a different language (or format) unless you get permission from the TFs. If you use any special libraries you must include them with your code (program should run as is). </p>
+</li>
+<li><p>If you have multiple files (e.g. you've added code files and images) create a tarball for all files in a single file and name it: AM207_YOURNAME_HM5.tar or AM207_YOURNAME_HM5.zip</p>
+</li>
+</ul>
+<hr>
+</hr></hr></div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="question-1">Question 1</h2>
+<p>Consider</p>
+<p>$$f(x,y)= \exp(-100 (\sqrt{y^2 + x^2} - 1)^2 + (x - 1)^3 - y - 5)$$</p>
+<p>Sample $ f(x,y) $ by writing a</p>
+<ol>
+<li>Metropolis or Metropolis-Hastings sampler</li>
+<li>Slice sampler</li>
+<li>HMC sampler</li>
+</ol>
+<p>For each of the samplers, make sure to present a 2d plot of the samples and a traceplot of the samples for each marginal distribution. Describe convergence diagnostics for each sampling method using the Gewecke test and by checking the autocorrelation.  Add any additional diagnostic checks (e.g. histograms, Gelman-Rubin, ESS, etc...) that you feel comfortable with as well. Describe how your samplers fared but use the same burnin and thinning parameters to make the comparison fair.</p>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="question-2">Question 2</h2>
+<h3 id="bayes-evidence">Bayes Evidence</h3>
+<p>Introduced by Harold Jeffreys, a 'Bayes factor' is a Bayesian alternative to frequentist hypothesis testing that is most often used for the comparison of multiple models usually to determine which model better fits the data (Jeffreys, 1961). Bayes factors are notoriously difficult to compute.</p>
+<p>This is often called the marginal likelihood, integrated likelihood or
+evidence for a model $M$ and is difficult to compute in general.</p>
+<p>$$ {\cal E_M}= P(D \vert M) = \int p(D|\theta_M) p(\theta_M \vert M) \, d \theta_M $$</p>
+<p>where M is the model (we shall assume here that two models $M_1$ and $M_2$ have the same parameters but a different functional form for the likelihood).</p>
+<p>This can be only calculated up to a normalization factor. </p>
+<h3 id="cosmology">Cosmology</h3>
+<p>In the 1920s, Edwin Hubble, using the newly constructed 100" telescope at Mount Wilson Observatory, detected variable stars in several nebulae. Nebulae are diffuse objects whose nature was a topic of heated debate in the astronomical community: were they interstellar clouds in our own Milky Way galaxy, or whole galaxies outside our galaxy? This was a difficult question to answer because it is notoriously difficult to measure the distance to most astronomical bodies since there is no point of reference for comparison. Hubble's discovery was revolutionary because these variable stars had a characteristic pattern resembling a class of stars called Cepheid variables. Earlier, Henrietta Levitt, part of a group of female astronomers working at <strong>Harvard College Observatory</strong>, had shown there was a tight correlation between the period of a Cepheid variable star and its luminosity (intrinsic brightness). By knowing the luminosity of a source it is possible to measure the distance to that source by measuring how bright it appears to us: the dimmer it appears the farther away it is. Thus, by measuring the period of these stars (and hence their luminosity) and their apparent brightness, Hubble was able to show that these nebula were not clouds within our own Galaxy, but were external galaxies far beyond the edge of our own Galaxy.</p>
+<p>Hubble's second revolutionary discovery was based on comparing his measurements of the Cepheid-based galaxy distance determinations with measurements of the relative velocities of these galaxies. He showed that more distant galaxies were moving away from us more rapidly:</p>
+<p>$$v = H_0 d$$</p>
+<p>where v is the speed at which a galaxy moves away from us, and d is its distance. The constant of proportionality Ho is now called the Hubble constant. The common unit of velocity used to measure the speed of a galaxy is km/sec, while the most common unitfor measuring the distance to nearby galaxies is called the Megaparsec (Mpc) which is equal to 3.26 million light years or 30,800,000,000,000,000,000 km! Thus the units of the Hubble constant are (km/sec)/Mpc.</p>
+<p>The Hubble parameter measures the expansion rate at which the universe expands. Think about the Pythagoras theorem: it tells us that $ds^2 = dx^2 + dy^2$. This is true for a static space. But if space is expanding the the pythagoras theorem reads like $ds^2 = a(t) * (dx^2 + dy^2)$. $a(t)$ measures how fast the [angles of the] triangle is expanding with time t. This is what happens to the universe. The Hubble parameter simply measures the rate at which a(t) changes and is defined as:  $H(t)  = \frac{da(t)}{dt}\frac{1}{a(t)}$. Thus $H(t)$ tells us how fast space is growing. Astronomers measure it at different times to understand the nature of the universe.</p>
+<p>The Hubble parameter can be obtained from the Friedmann-Robertson Walker equations as a function of the redshift $z$.  Cosmological redshift is seen due to the expansion of the universe, and sufficiently distant light sources (generally those more than a few million light years away) show redshift corresponding to the rate of increase in their distance from Earth. 
+This equation has the following parameters</p>
+<ul>
+<li>the equation of state $w$ which is known to most likely have a value between -0.2 and -1.8</li>
+<li>the Hubble constant $H_0$ which is known to be most likely between 50 and 90 with a mean around 70</li>
+<li>the fraction of matter in the universe $\Omega_M$ (which being a fraction is confined to be between 0 and 1, with mean known to be roughly around 0.3)</li>
+</ul>
+<p>$$H(z; w, H_0, \Omega_m)=H_0 (z+1)^{3/2} \sqrt{ \Omega_m + (1 - \Omega_m) (z+1)^{3w}} $$ </p>
+<p>Here we can assume that the observed values of $H$ differ from the functional values $H(z; w, H_0,\Omega_m)$ by additive noise, and we will further assume that this noise follows independent, identically distributed,  Gaussian
+distributions with zero mean and variance $\sigma_i^2$</p>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Consider two models, with fixed $w$, and the other parameters undetermined:</p>
+<p><strong>MODEL 1</strong> An accelerated expansion of the universe can be characterized by the equation of state of dark energy. In the simplest case, the equation of state of the cosmological constant is:</p>
+<p> $w=-1$</p>
+<p><strong>MODEL 2:</strong> Phantom energy is a hypothetical form of dark energy that is even more potent than the cosmological constant at increasing the expansion of the universe (i.e., it satisfies the equation of state with  w &lt; -1). If it exists, it could cause the expansion of the universe to accelerate so quickly that a scenario known as the Big Rip would occur.</p>
+<p>$w=-1.3$</p>
+<p>Consider gaussian priors for the other parameters $\Omega_m$ and $H_0$.</p>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="data">Data</h4>
+<p>Recent measurements of $H(z)$ between redshift $0.1 &lt; z &lt; 2$  from the cosmic chronometers project [Moresco et al arXiv:1010.0831] are given below.   The cosmic chronometer method is the only method that provides cosmology-independent, direct  measurements of the expansion history of the universe (i.e. H vs z measurements).</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell">
+<div class="input">
+<div class="prompt input_prompt">
+In [1]:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="n">data</span> <span class="o">=</span> <span class="s">"""z      Hz      errHz</span>
+<span class="s">0.090   69      12</span>
+<span class="s">0.170   83      8</span>
+<span class="s">0.179   75      4</span>
+<span class="s">0.199   75      5</span>
+<span class="s">0.270   77      14</span>
+<span class="s">0.352   83      14</span>
+<span class="s">0.400   95      17</span>
+<span class="s">0.480   97      62</span>
+<span class="s">0.593   104     13</span>
+<span class="s">0.680   92      8</span>
+<span class="s">0.781   105     12</span>
+<span class="s">0.875   125     17</span>
+<span class="s">0.880   90      40</span>
+<span class="s">0.900   117     23</span>
+<span class="s">1.037   154     20</span>
+<span class="s">1.300   168     17</span>
+<span class="s">1.430   177     18</span>
+<span class="s">1.530   140     14</span>
+<span class="s">1.750   202     40</span>
+<span class="s">"""</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<ol>
+<li><p>Using Bayesian methodology, calculate the joint posteriors of all parameters and provide the MAP values for all of them, for each of Model 1 and Model 2. Use a slice sampler to make your samples for each parameter. Plot the marginal and joint posterior distributions of the parameters, and estimate the MAP values of the parameters by creating a two dimensional histogram.</p>
+</li>
+<li><p>Calculate the Bayesian evidence ration for Model 1 and Model 2. Which model is more likely?</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell">
+<div class="input">
+<div class="prompt input_prompt">
+In []:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre>
+</pre></div>
+</div>
+</div>
+</div></p>
+            </div>
+            <!-- /.entry-content -->
+        </article>
+    </section>
+
+        </div>
+        <div class="col-lg-3 well well-sm" id="sidebar">
+<aside>
+    <section>
+        <ul class="list-group list-group-flush">
+
+
+                <li class="list-group-item"><h4><i class="icon-home icon-large"></i>Class Material</h4></li>
+                    <li class="list-group-item">
+                       <a href="http://iacs-courses.seas.harvard.edu/courses/am207/tag/homeworks.html">
+                           <i class="icon-folder-open icon-large"></i>homeworks
+                       </a>
+                   </li>
+                    <li class="list-group-item">
+                       <a href="http://iacs-courses.seas.harvard.edu/courses/am207/tag/labs.html">
+                           <i class="icon-folder-open icon-large"></i>labs
+                       </a>
+                   </li>
+                    <li class="list-group-item">
+                       <a href="http://iacs-courses.seas.harvard.edu/courses/am207/tag/projects.html">
+                           <i class="icon-folder-open icon-large"></i>projects
+                       </a>
+                   </li>
+                    <li class="list-group-item">
+                       <a href="http://iacs-courses.seas.harvard.edu/courses/am207/tag/lectures.html">
+                           <i class="icon-folder-open icon-large"></i>lectures
+                       </a>
+                   </li>
+
+            <!--li class="list-group-item"><a href="http://iacs-courses.seas.harvard.edu/courses/am207/tags.html"><h4><i class="icon-tags icon-large"></i>Tags</h4></a></li-->
+                <li class="list-group-item"><h4><i class="icon-external-link icon-large"></i>Class Links</h4></li>
+                    <li class="list-group-item"><a href="https://piazza.com/harvard/spring2014/am207/home"><i class="icon-external-link"></i>Piazza</a></li>
+                    <li class="list-group-item"><a href="http://cm.dce.harvard.edu/2014/02/24104/publicationListing.shtml"><i class="icon-external-link"></i>Videos</a></li>
+                    <li class="list-group-item"><a href="http://isites.harvard.edu/icb/icb.do?keyword=k102129&login=yes"><i class="icon-external-link"></i>ISite</a></li>
+                <li class="list-group-item"><h4><i class="icon-external-link icon-large"></i>Other Links</h4></li>
+                    <li class="list-group-item"><a href="http://docs.scipy.org/doc/numpy/reference/"><i class="icon-external-link"></i>Numpy</a></li>
+                    <li class="list-group-item"><a href="http://docs.scipy.org/doc/scipy/reference/"><i class="icon-external-link"></i>Scipy</a></li>
+                    <li class="list-group-item"><a href="http://pandas.pydata.org/pandas-docs/dev/"><i class="icon-external-link"></i>Pandas</a></li>
+                    <li class="list-group-item"><a href="http://matplotlib.org/api/index.html"><i class="icon-external-link"></i>Matplotlib</a></li>
+                    <li class="list-group-item"><a href="https://github.com/pymc-devs/pymc"><i class="icon-external-link"></i>PyMC3</a></li>
+                    <li class="list-group-item"><a href="http://iacs.seas.harvard.edu"><i class="icon-external-link"></i>IACS</a></li>
+        </ul>
+    </section>
+</aside>        </div>
+    </div>
+</div>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="http://iacs-courses.seas.harvard.edu/courses/am207/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="http://iacs-courses.seas.harvard.edu/courses/am207/theme/js/respond.min.js"></script>
+</body>
+</html>

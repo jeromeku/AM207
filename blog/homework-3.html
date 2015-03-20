@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:og="http://ogp.me/ns#"
+      xmlns:fb="https://www.facebook.com/2008/fbml">
+<head>
+    <title>Homework 3</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Open Graph tags -->
+
+            <meta property="og:type" content="article"/>
+            <meta property="og:title" content="Homework 3"/>
+            <meta property="og:url" content="http://iacs-courses.seas.harvard.edu/courses/am207/blog/homework-3.html"/>
+            <meta property="og:description" content="Second homework on Monte Carlo, MCMC, and the like"/>
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://iacs-courses.seas.harvard.edu/courses/am207/theme/css/bootstrap.flatly.min.css" type="text/css"/>
+    <link href="http://iacs-courses.seas.harvard.edu/courses/am207/theme/css/font-awesome.min.css" rel="stylesheet">
+    <link href="http://iacs-courses.seas.harvard.edu/courses/am207/theme/css/pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://iacs-courses.seas.harvard.edu/courses/am207/theme/css/style.css" type="text/css"/>
+    <!-- JavaScript plugins (requires jQuery) -->
+    <script src="http://code.jquery.com/jquery.js"></script>
+
+        <link href="http://iacs-courses.seas.harvard.edu/courses/am207/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="AM207 ATOM Feed"/>
+    
+        
+
+<style type="text/css">
+/* Overrides of notebook CSS for static HTML export */
+div.entry-content {
+  overflow: visible;
+  padding: 8px;
+}
+.input_area {
+  padding: 0.2em;
+}
+
+a.heading-anchor {
+ white-space: normal;
+}
+
+.rendered_html
+code {
+ font-size: .8em;
+}
+
+pre.ipynb {
+  color: black;
+  background: #f7f7f7;
+  border: none;
+  box-shadow: none;
+  margin-bottom: 0;
+  padding: 0;
+  margin: 0px;
+  font-size: 13px;
+}
+
+img.anim_icon{padding:0; border:0; vertical-align:middle; -webkit-box-shadow:none; -box-shadow:none}
+
+div.cell{width:100%;padding:5px 5px 5px 0px;margin:2px 0px 2px 7px;outline:none;}
+div.prompt{width:11ex;padding:0.4em;margin:0px;font-family:monospace;text-align:right;line-height:1.231em;display:none;}
+
+/*
+div.input_prompt{color:navy;border-top:1px solid transparent;}
+div.output_scroll{height:24em;width:100%;overflow:auto;border-radius:4px;-webkit-box-shadow:inset 0 2px 8px rgba(0, 0, 0, 0.8);-moz-box-shadow:inset 0 2px 8px rgba(0, 0, 0, 0.8);box-shadow:inset 0 2px 8px rgba(0, 0, 0, 0.8);}
+div.output_collapsed{margin:0px;padding:0px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-box-align:stretch;display:-moz-box;-moz-box-orient:vertical;-moz-box-align:stretch;display:box;box-orient:vertical;box-align:stretch;width:100%;}
+div.output_prompt{color:darkred;}*/
+</style>
+
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+<script type="text/javascript">
+init_mathjax = function() {
+    if (window.MathJax) {
+        // MathJax loaded
+        MathJax.Hub.Config({
+        	config: ['MMLorHTML.js'], 
+            jax: ['input/TeX','output/HTML-CSS'],
+            TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+            extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js'],
+            tex2jax: {
+                inlineMath: [ ['$','$'], ['\\(','\\)'] ],
+                displayMath: [ ['$$','$$'], ['\\[','\\]'] ],
+                processEscapes: true
+            },
+            //displayAlign: 'left', // Change this to 'center' to center equations.
+            "HTML-CSS": {
+                styles: { '.MathJax .mo, .MathJax .mi': {color: 'black ! important'}}
+            }
+        });
+        MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+    }
+}
+init_mathjax();
+</script>
+
+</head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://iacs-courses.seas.harvard.edu/courses/am207/index.html" class="navbar-brand">AM207</a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                    <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/schedule.html">Schedule</a></li>
+                    <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/syllabus.html">Syllabus</a></li>
+                    <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/policies.html">Policies</a></li>
+                    <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/resources.html">Resources</a></li>
+                    <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/contact.html">Contact</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/archives.html"><i class="icon-th-list"></i>Archives</a></li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</nav>
+<!-- /.navbar -->
+<div class="container">
+    <div class="row">
+        <div class="col-lg-9">
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h2>
+                    <a href="http://iacs-courses.seas.harvard.edu/courses/am207/blog/homework-3.html"
+                       rel="bookmark"
+                       title="Permalink to Homework 3">
+                        Homework 3
+                    </a>
+                </h2>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="icon-calendar"></i>Thu 20 February 2014
+    </span>
+
+    <!--span class="label label-default">Category</span>
+    <a href="http://iacs-courses.seas.harvard.edu/courses/am207/category/misc.html">misc</a-->
+
+
+<span class="label label-default">Tags</span>
+	<a href="http://iacs-courses.seas.harvard.edu/courses/am207/tag/homeworks.html">homeworks</a>
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <p>You can download this homework <a href="{filename}/../../notebooks/HW3.ipynb">here</a>.</p>
+<p>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="AM-207:-Homework-3"><strong>AM 207</strong>: Homework 3<a class="anchor-link" href="#AM-207:-Homework-3">¶</a></h1>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<p>Pavlos Protopapas <br>
+Handed out: Thursday, February 20th, 2014<br>
+Due: 11.59 P.M. Wednesday February 26th, 2014</br></br></p>
+<p><strong>Instructions</strong>:</p>
+<ul>
+<li><p>Upload your answers in an ipython notebook to the dropbox.</p>
+</li>
+<li><p>Your individual submissions use the following filenames: AM207_YOURNAME_HM3.ipynb</p>
+</li>
+<li><p>Your code should be in code cells as part of your ipython notebook. Do not use a different language (or format) unless you get permission from the TFs. If you use any special libraries you must include them with your code (program should run as is). </p>
+</li>
+<li><p>If you have multiple files (e.g. you've added code files and images) create a tarball for all files in a single file and name it: AM207_YOURNAME_HM2.tar or AM207_YOURNAME_HM2.zip</p>
+</li>
+</ul>
+<hr>
+</hr></hr></div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Question-1:--Choosing-the-simplest-integral">Question 1:  Choosing the simplest integral<a class="anchor-link" href="#Question-1:--Choosing-the-simplest-integral">¶</a></h3>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The integral
+$I = \int_{0}^{\infty} f(x) dx $ can be evaluated with MC as 
+$I \approx \frac{1}{N} \sum\limits_{i=1}^{N} f(x_i)$
+where $x$'s are drawn from the uniform distribution. 
+However if the function can be split into $f(x) = h(x) \, p(x) $, then 
+the integral can be approximated with MC as:</p>
+<p>$I = \int_{0}^{\infty} h(x)\,p(x) dx  \approx \frac{1}{N} \sum\limits_{i=1}^{N} h(x_i)$ where the values of $x$'s are now drawn from $p(x)$. </p>
+<p>Alternatively we can approximate the integral as 
+$\hat{I} \approx \frac{1}{N} \sum\limits_{i=1}^{N} p(x_i) $
+where the values of $x$'s are now drawn from $h(x)$.</p>
+<p>The goal of this question is to evaluate the integral:</p>
+<p>$I=\int_{0}^{\infty} \frac{x\, \ln{(x+1)}}{3+(x-3)^2} \, e^{\sqrt{x} -x } \, dx $</p>
+<p>(a) Which part of the integrand is more suitable as the function to
+  evaluate, and which is best used as a distribution
+  to draw random variates from? For the remainder of this question, we shall call the distribution we are sampling from, $g(x)$.</p>
+<p>[Hint: the distribution $g(x)$ should be easy to find a normalization factor for, 
+and the overall variance of the resulting integrand should be lowered]</p>
+<p>(b) Implement a Metropolis-Hastings algorithm that has as a
+  stationary distribution to sample from, $g(x)$.  Run the simulation
+  50 times for sample size of 150,000 and report the value of the
+  integral $\hat{I}$ and the VAR(${\hat{I}}$).</p>
+<p>(c) Now use the accept-rejection method to draw from $g(x)$ and compare
+  the two methods (compare $\hat{I}$ and VAR(${\hat{I}}$)).  Which
+  has the lowest variance? Why do you think this is the case?</p>
+<p>(d) Also use importance sampling to evaluate the integral.  Which
+  part of the function is best to use as importance sampling
+  distribution?  Run the simulation 50 times for sample size of
+  150,000 and
+  report the value of the integral  $\hat{I}$ and the VAR(${\hat{I}}$).
+  Note: You can choose a different $g(x)$ for this part. The idea is
+  that you draw from $g(x)$ using inverse transform.</p>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Question-2:--Message-in-a-bottle">Question 2:  Message in a bottle<a class="anchor-link" href="#Question-2:--Message-in-a-bottle">¶</a></h3>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Sometimes the target distribution is
+  not available in a functional form but rather as a table or a
+  matrix. Download <a href="./files/pdf_data.txt">pdf_data.txt</a> from the course
+  website. This is a MxN matrix representing the pdf values in a 2D
+  discrete space.  Implement a random walk Metropolis-Hastings to draw
+  pairs from this distribution.  Experiment with various walk steps.
+  What is the hidden message?</p>
+<p>  Bonus points will be awarded to the most well-presented version of the hidden message, and this will be displayed on the course website.</p>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Question-3:--Monkey-see,-monkey-do-MH">Question 3:  Monkey see, monkey do MH<a class="anchor-link" href="#Question-3:--Monkey-see,-monkey-do-MH">¶</a></h3>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>A good performance test of the ability of a technique to sample the full
+parameter space is to test the sampling of the Rosenbrock 'Banana' Function.
+Consider the following specific form of a Banana PDF,</p>
+<p>$ P(X) \propto {\rm exp} \left[ - \frac{1}{2a^2} \left(\sqrt{x_1^2 + x_2^2} -1 \right)^2 -  \frac{1}{2b^2} \left(x_2 - 1 \right)^2  \right] $ where $a=0.1$ and $b=1$.</p>
+<p>(a) Using the proposal function,</p>
+<p>$q(x,y) = \frac{1}{\sqrt{2 \pi \gamma^2}} {\rm exp}\left[-\frac{1}{2 \gamma^2} |x-y|^2 \right] $ </p>
+<p>with $\gamma = 1$ and beginning at the origin, $x_0 = (0,0)$,
+construct a M-H algorithm to produce $N=100,000$ samples from
+$P(X)$. Plot the results. What is a good burn-in factor? Why? [HINT: an acceptance ratio in logarithmic form may work better]</p>
+<p>(b) Using $P(X)$, construct 3 new samples of $N=100,000$ using
+$\gamma = 0.02, 0.8, 5$. Plot the accepted sample histories for each
+sample. What is the acceptance rate for each sample? What is the most
+efficient value for $\gamma$ to select the 100,000 samples?</p>
+<p>(c) Calculate the mean of each sample from (b), and plot the lagged
+auto-correlations of the centered components,</p>
+<p>$\hat{h}_{i,k} = \frac{1}{|z|^2} \sum\limits_{j=1}^{N-k} z_{j+k} \times z_j $ where $z_{j} = (x_j - \bar{x})_i$, $i=1,2$. Interpret your results.</p>
+<p>(d) Suggest a different (improved) functional form for the proposal
+and implement this in a M-H algorithm. Compare the acceptance and
+auto-correlations with that of the $\gamma = 1$ $q(x,y)$ function from
+(a).</p>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Question-4:-World-Cup-Winners">Question 4: World Cup Winners<a class="anchor-link" href="#Question-4:-World-Cup-Winners">¶</a></h3>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p> Suppose we ask individuals to remember the chronological order of
+  world cup winners. Individuals make a number of mistakes in the
+  ordering of winners that can be captured by simple probabilistic
+  models, such as Mallows model. Here's a simple
+  example to explain Mallows model:</p>
+<p>  Suppose that we are looking at the last four winners: France,
+  Brazil, Italy, Spain.  We will represent this true ordering by a
+  vector $\omega =$ (1,2,3,4) = (France, Brazil, Italy, Spain).
+  Mallows model now proposes that the remembered orderings tend to be
+  similar to the true ordering, with very similar orderings being more
+  likely than dissimilar orderings. Specifically, according to Mallows
+  model, the probability that an individual remembers an ordering
+  $\theta$ is proportional to:</p>
+<p>$ p(\theta | \omega, \lambda) \propto  e^{-\lambda d(\theta, \omega)} $</p>
+<p>In this equation, $d(\theta, \omega)$ is the Kendall tau, $\tau$ is the
+distance between two orderings. This distance measures the number of
+adjacent pairwise swaps that are needed to bring the two orderings
+into alignment.</p>
+<p>For example, if $\theta = $ (Brazil, France, Italy,
+Spain) then $d(\theta, \omega) = 1$ because one swap is needed to make
+the two orderings identical. Similarly, if $\theta=$ (Brazil, Italy,
+France, Spain), then $d(\theta, \omega) = 2$ because two swaps are
+needed. Note that in Kendall tau distance, only adjacent items can be
+swapped.  The scaling parameter $\lambda$ controls how sharply peaked
+the distribution of remembered orderings is around the true
+ordering. Therefore, by increasing $\lambda$, the model makes it more
+likely that the correct ordering (or something similar) will be
+produced.  The problem is now to generate orderings $\theta$ according
+to Mallows model, given the true ordering $\omega$ and scaling
+parameter $\lambda$. This can be achieved in very simple ways using a
+Metropolis sampler.</p>
+<p>Implement a Metropolis-Hastings algorithm to produce sample
+guesses from 100 individuals. Choose various proposal distributions
+and experiment with different values of $\lambda$.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell">
+<div class="input">
+<div class="prompt input_prompt">
+In []:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre>
+</pre></div>
+</div>
+</div>
+</div></p>
+            </div>
+            <!-- /.entry-content -->
+        </article>
+    </section>
+
+        </div>
+        <div class="col-lg-3 well well-sm" id="sidebar">
+<aside>
+    <section>
+        <ul class="list-group list-group-flush">
+
+
+                <li class="list-group-item"><h4><i class="icon-home icon-large"></i>Class Material</h4></li>
+                    <li class="list-group-item">
+                       <a href="http://iacs-courses.seas.harvard.edu/courses/am207/tag/homeworks.html">
+                           <i class="icon-folder-open icon-large"></i>homeworks
+                       </a>
+                   </li>
+                    <li class="list-group-item">
+                       <a href="http://iacs-courses.seas.harvard.edu/courses/am207/tag/labs.html">
+                           <i class="icon-folder-open icon-large"></i>labs
+                       </a>
+                   </li>
+                    <li class="list-group-item">
+                       <a href="http://iacs-courses.seas.harvard.edu/courses/am207/tag/projects.html">
+                           <i class="icon-folder-open icon-large"></i>projects
+                       </a>
+                   </li>
+                    <li class="list-group-item">
+                       <a href="http://iacs-courses.seas.harvard.edu/courses/am207/tag/lectures.html">
+                           <i class="icon-folder-open icon-large"></i>lectures
+                       </a>
+                   </li>
+
+            <!--li class="list-group-item"><a href="http://iacs-courses.seas.harvard.edu/courses/am207/tags.html"><h4><i class="icon-tags icon-large"></i>Tags</h4></a></li-->
+                <li class="list-group-item"><h4><i class="icon-external-link icon-large"></i>Class Links</h4></li>
+                    <li class="list-group-item"><a href="https://piazza.com/harvard/spring2014/am207/home"><i class="icon-external-link"></i>Piazza</a></li>
+                    <li class="list-group-item"><a href="http://cm.dce.harvard.edu/2014/02/24104/publicationListing.shtml"><i class="icon-external-link"></i>Videos</a></li>
+                    <li class="list-group-item"><a href="http://isites.harvard.edu/icb/icb.do?keyword=k102129&login=yes"><i class="icon-external-link"></i>ISite</a></li>
+                <li class="list-group-item"><h4><i class="icon-external-link icon-large"></i>Other Links</h4></li>
+                    <li class="list-group-item"><a href="http://docs.scipy.org/doc/numpy/reference/"><i class="icon-external-link"></i>Numpy</a></li>
+                    <li class="list-group-item"><a href="http://docs.scipy.org/doc/scipy/reference/"><i class="icon-external-link"></i>Scipy</a></li>
+                    <li class="list-group-item"><a href="http://pandas.pydata.org/pandas-docs/dev/"><i class="icon-external-link"></i>Pandas</a></li>
+                    <li class="list-group-item"><a href="http://matplotlib.org/api/index.html"><i class="icon-external-link"></i>Matplotlib</a></li>
+                    <li class="list-group-item"><a href="https://github.com/pymc-devs/pymc"><i class="icon-external-link"></i>PyMC3</a></li>
+                    <li class="list-group-item"><a href="http://iacs.seas.harvard.edu"><i class="icon-external-link"></i>IACS</a></li>
+        </ul>
+    </section>
+</aside>        </div>
+    </div>
+</div>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="http://iacs-courses.seas.harvard.edu/courses/am207/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="http://iacs-courses.seas.harvard.edu/courses/am207/theme/js/respond.min.js"></script>
+</body>
+</html>

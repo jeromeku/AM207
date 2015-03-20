@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:og="http://ogp.me/ns#"
+      xmlns:fb="https://www.facebook.com/2008/fbml">
+<head>
+    <title>Homework 9</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Open Graph tags -->
+
+            <meta property="og:type" content="article"/>
+            <meta property="og:title" content="Homework 9"/>
+            <meta property="og:url" content="http://iacs-courses.seas.harvard.edu/courses/am207/blog/homework-9.html"/>
+            <meta property="og:description" content="Homework on Time Series and Project Proposal"/>
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://iacs-courses.seas.harvard.edu/courses/am207/theme/css/bootstrap.flatly.min.css" type="text/css"/>
+    <link href="http://iacs-courses.seas.harvard.edu/courses/am207/theme/css/font-awesome.min.css" rel="stylesheet">
+    <link href="http://iacs-courses.seas.harvard.edu/courses/am207/theme/css/pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://iacs-courses.seas.harvard.edu/courses/am207/theme/css/style.css" type="text/css"/>
+    <!-- JavaScript plugins (requires jQuery) -->
+    <script src="http://code.jquery.com/jquery.js"></script>
+
+        <link href="http://iacs-courses.seas.harvard.edu/courses/am207/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="AM207 ATOM Feed"/>
+    
+        
+
+<style type="text/css">
+/* Overrides of notebook CSS for static HTML export */
+div.entry-content {
+  overflow: visible;
+  padding: 8px;
+}
+.input_area {
+  padding: 0.2em;
+}
+
+a.heading-anchor {
+ white-space: normal;
+}
+
+.rendered_html
+code {
+ font-size: .8em;
+}
+
+pre.ipynb {
+  color: black;
+  background: #f7f7f7;
+  border: none;
+  box-shadow: none;
+  margin-bottom: 0;
+  padding: 0;
+  margin: 0px;
+  font-size: 13px;
+}
+
+img.anim_icon{padding:0; border:0; vertical-align:middle; -webkit-box-shadow:none; -box-shadow:none}
+
+div.cell{width:100%;padding:5px 5px 5px 0px;margin:2px 0px 2px 7px;outline:none;}
+div.prompt{width:11ex;padding:0.4em;margin:0px;font-family:monospace;text-align:right;line-height:1.231em;display:none;}
+
+/*
+div.input_prompt{color:navy;border-top:1px solid transparent;}
+div.output_scroll{height:24em;width:100%;overflow:auto;border-radius:4px;-webkit-box-shadow:inset 0 2px 8px rgba(0, 0, 0, 0.8);-moz-box-shadow:inset 0 2px 8px rgba(0, 0, 0, 0.8);box-shadow:inset 0 2px 8px rgba(0, 0, 0, 0.8);}
+div.output_collapsed{margin:0px;padding:0px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-box-align:stretch;display:-moz-box;-moz-box-orient:vertical;-moz-box-align:stretch;display:box;box-orient:vertical;box-align:stretch;width:100%;}
+div.output_prompt{color:darkred;}*/
+</style>
+
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+<script type="text/javascript">
+init_mathjax = function() {
+    if (window.MathJax) {
+        // MathJax loaded
+        MathJax.Hub.Config({
+        	config: ['MMLorHTML.js'], 
+            jax: ['input/TeX','output/HTML-CSS'],
+            TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+            extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js'],
+            tex2jax: {
+                inlineMath: [ ['$','$'], ['\\(','\\)'] ],
+                displayMath: [ ['$$','$$'], ['\\[','\\]'] ],
+                processEscapes: true
+            },
+            //displayAlign: 'left', // Change this to 'center' to center equations.
+            "HTML-CSS": {
+                styles: { '.MathJax .mo, .MathJax .mi': {color: 'black ! important'}}
+            }
+        });
+        MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+    }
+}
+init_mathjax();
+</script>
+
+</head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://iacs-courses.seas.harvard.edu/courses/am207/index.html" class="navbar-brand">AM207</a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                    <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/schedule.html">Schedule</a></li>
+                    <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/syllabus.html">Syllabus</a></li>
+                    <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/policies.html">Policies</a></li>
+                    <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/resources.html">Resources</a></li>
+                    <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/contact.html">Contact</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="http://iacs-courses.seas.harvard.edu/courses/am207/archives.html"><i class="icon-th-list"></i>Archives</a></li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</nav>
+<!-- /.navbar -->
+<div class="container">
+    <div class="row">
+        <div class="col-lg-9">
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h2>
+                    <a href="http://iacs-courses.seas.harvard.edu/courses/am207/blog/homework-9.html"
+                       rel="bookmark"
+                       title="Permalink to Homework 9">
+                        Homework 9
+                    </a>
+                </h2>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="icon-calendar"></i>Tue 15 April 2014
+    </span>
+
+    <!--span class="label label-default">Category</span>
+    <a href="http://iacs-courses.seas.harvard.edu/courses/am207/category/misc.html">misc</a-->
+
+
+<span class="label label-default">Tags</span>
+	<a href="http://iacs-courses.seas.harvard.edu/courses/am207/tag/homeworks.html">homeworks</a>
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <p>You can download this homework <a href="{filename}/../../notebooks/HW9.ipynb">here</a>.</p>
+<p>You can download the data file <a href="{filename}/../../files/EMPSF.txt">here</a>.</p>
+<p>You can download the data file <a href="{filename}/../../files/EMPSF_NB.txt">here</a>.</p>
+<p>You can download the data file <a href="{filename}/../../files/iris.txt">here</a>.</p>
+<p>You can download the data file <a href="{filename}/../../files/NASDAQ.txt">here</a>.</p>
+<p>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="AM-207:-Homework-9"><strong>AM 207</strong>: Homework 9<a class="anchor-link" href="#AM-207:-Homework-9">¶</a></h1>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<p>Pavlos Protopapas <br>
+Handed out: Tuesday April 15th, 2014<br>
+Due: Thursday April 24th, 2014, 11.59PM</br></br></p>
+<p><strong>Instructions</strong>:</p>
+<ul>
+<li><p>Upload your answers in an ipython notebook to the dropbox.</p>
+</li>
+<li><p>Your individual submissions use the following filenames: AM207_YOURNAME_HM9.ipynb</p>
+</li>
+<li><p>Your code should be in code cells as part of your ipython notebook. Do not use a different language (or format) unless you get permission from the TFs. If you use any special libraries you must include them with your code (program should run as is). </p>
+</li>
+<li><p>If you have multiple files (e.g. you've added code files and images) create a tarball for all files in a single file and name it: AM207_YOURNAME_HM9.tar or AM207_YOURNAME_HM9.zip</p>
+</li>
+</ul>
+<hr>
+</hr></hr></div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Question-1.-Hidden-NASDAQ-moves">Question 1. Hidden NASDAQ moves<a class="anchor-link" href="#Question-1.-Hidden-NASDAQ-moves">¶</a></h2>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Consider the following simple HMM for the NASDAQ prices. </p>
+<p>$$ x_t =  \alpha x_{t-1} + \tau $$</p>
+<p>where $x_t$ is the 'hidden'  price at time $t$ and $\alpha$  is a parameter to be set,  $\tau \sim N(0, \sigma_\tau^2)$. </p>
+<p>$$ y_t = \beta x_t + \omega $$</p>
+<p>where $x_t$ is the actual price,  $\beta$ is another parameter and  $\omega \sim N(0, \sigma_\omega^2)$. </p>
+<p>Use file <a href="./files/NASDAQ.txt">NASDAQ.txt</a>.</p>
+<ol>
+<li>Choose $\alpha =0.995$, $\sigma_\tau=1$, $\beta=2$ and $\sigma_\omega=1$ and implement a SMC to track the prices.</li>
+<li>Assume you start with \$1000. At each step predict if the price will go up or down. If your prediction is that the price will go up, <strong>buy</strong> stocks. At each time, also consider selling stocks. Use the first 1000 points for the sequential mc to track and invest for the rest of the points. </li>
+<li>Now experiment with various values of the parameters. Used a fixed seed=12 and try to maximize your profits. Explain your strategy.</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Question-2.-Separate-the-bayesian-irises">Question 2. Separate the bayesian irises<a class="anchor-link" href="#Question-2.-Separate-the-bayesian-irises">¶</a></h2>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The goal of this problem is to introduce you to the idea of classification 
+using Bayesian inferences. </p>
+<p>You are given the famous <em>Fisher flower Iris data set</em>
+which is a  multivariate data set introduced by Sir Ronald Fisher (1936) as an example of discriminant analysis.
+The data set consists of 50 samples from each of three species of Iris (Iris setosa, Iris virginica and Iris versicolor). Four features were measured from each sample: the length and the width of the sepals and petals, in centimeters. Based on the combination of these four features, you will build a model to predict
+the species. </p>
+<p>For this problem only consider two classes: versicolor and virginica. </p>
+<p>The iris data can be obtained <a href="./files/iris.txt">here</a>.</p>
+<p>Lets $(X, Y )$ be our dataset, where $X=\{\vec{x}_1, \ldots \vec{x}_n\}$ and $\vec{x}_i$ is 4D corresponding
+to the four components explained above. $Y \in \{0,1\}$ are the scalar 
+labels of a class. In other words<br>the species labels are your $Y$ data (say versicolor = 0 and virginica=1), and the four features, petal length
+and width, sepal length and width, are your $X$ data. </br></p>
+<p>The goal is to train a classifier, that will predict an unknown class label $\hat{y}$ from a new data point $\hat{x}$. </p>
+<p>Consider the following model (logistic model) for the probability of a class:</p>
+<p>$$ Y \sim \frac{1}{1+e^{-X^T \beta}} $$</p>
+<p>where $\beta$ is a 4D parameter to learn. </p>
+<ol>
+<li>Choose a prior for $\beta \sim N(0, \sigma^2 I) $ and write down the formula for the normalized posterior $p(\beta| Y,X)$. Note: You can choose $\sigma$ as you think fit (we wont be modeling it to a deeper level). </li>
+<li>Implement a MH or slice sampler to sample from this posterior of $\beta$.   Use the first 30 rows for each species as training data and leave out the last 20 rows for each species as test data (for a total of 60 training and 40 testing). Generate samples of $\beta$ and plot the sequence of $\beta$'s  and histograms for each $\beta$ component. </li>
+<li>Use the $\beta$ samples to get a prediction, $\hat{y}$ of the class labels for the test data and compare the predicted labels with the true labels and see how well you did by estimating the average error rate, $E[ | y-\hat{y} | ]$. </li>
+</ol>
+<p>HINT:<br>You <em>may</em> need to add an extra constant term to your X vector, i.e. $X=(1, x_1, x_2, x_3, x_4)$
+in order for this to work properly. </br></p>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Question-3.-Where-and-which-are-the-stars?">Question 3. Where and which are the stars?<a class="anchor-link" href="#Question-3.-Where-and-which-are-the-stars?">¶</a></h2>
+</div>
+</div>
+</div>
+<div class="input">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>When  celestial point sources (stars)  are observed via an imaging system (telescope) 
+the resulting image is an extended blob that represents the unresolved source. This blob 
+is also known as the point spread function (PSF). The point spread function (PSF) describes 
+the response of an imaging system to a point source. 
+Often the   PSF can be modeled as a Gaussian </p>
+<p>$$  I(r|\mu, \sigma) =  \frac{A}{ 2\pi \sigma^2} e^{-(\vec{r}-\vec{\mu})^2/2\sigma^2} $$</p>
+<p> where $\vec{r}$ is the position on the image,  $\vec{\mu}$ 
+the position of the source on the image,  $\sigma$ the width of the PSF (this should be the same for 
+all sources) and A the  intensity of the source. </p>
+<ol>
+<li><p>Consider the case of two  stars and use the observation image given in <a href="./files/EMPSF_NB.txt">EMPSF_NB.txt</a>. The file contains  the number of photons observed at each pixel $i,j=32\times32$.  Use the EM method to estimate the positions of the two stars ($\mu$),  the width of PSF ($\sigma$) and their intensity  $A$'s. </p>
+</li>
+<li><p>Now consider the case where the sky is not totally dark and therefore there are photons detected at  each pixel that are from the background light. We model the background as a third mixture component, this time with a poisson distribution. Assume that the background is uniform across the image, so that $\lambda$ is  $1/( 32^2)$. </p>
+</li>
+</ol>
+<p><a href="./files/EMPSF.txt">EMPSF.txt</a> contains the observations with such background light. Use  the EM method to estimate the positions, width, intensities and background light (intensity per pixel). </p>
+<p>HINT: the intensities are the mixture probabilities times the total photon count.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell">
+<div class="input">
+<div class="prompt input_prompt">
+In []:
+</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre>
+</pre></div>
+</div>
+</div>
+</div></p>
+            </div>
+            <!-- /.entry-content -->
+        </article>
+    </section>
+
+        </div>
+        <div class="col-lg-3 well well-sm" id="sidebar">
+<aside>
+    <section>
+        <ul class="list-group list-group-flush">
+
+
+                <li class="list-group-item"><h4><i class="icon-home icon-large"></i>Class Material</h4></li>
+                    <li class="list-group-item">
+                       <a href="http://iacs-courses.seas.harvard.edu/courses/am207/tag/homeworks.html">
+                           <i class="icon-folder-open icon-large"></i>homeworks
+                       </a>
+                   </li>
+                    <li class="list-group-item">
+                       <a href="http://iacs-courses.seas.harvard.edu/courses/am207/tag/labs.html">
+                           <i class="icon-folder-open icon-large"></i>labs
+                       </a>
+                   </li>
+                    <li class="list-group-item">
+                       <a href="http://iacs-courses.seas.harvard.edu/courses/am207/tag/projects.html">
+                           <i class="icon-folder-open icon-large"></i>projects
+                       </a>
+                   </li>
+                    <li class="list-group-item">
+                       <a href="http://iacs-courses.seas.harvard.edu/courses/am207/tag/lectures.html">
+                           <i class="icon-folder-open icon-large"></i>lectures
+                       </a>
+                   </li>
+
+            <!--li class="list-group-item"><a href="http://iacs-courses.seas.harvard.edu/courses/am207/tags.html"><h4><i class="icon-tags icon-large"></i>Tags</h4></a></li-->
+                <li class="list-group-item"><h4><i class="icon-external-link icon-large"></i>Class Links</h4></li>
+                    <li class="list-group-item"><a href="https://piazza.com/harvard/spring2014/am207/home"><i class="icon-external-link"></i>Piazza</a></li>
+                    <li class="list-group-item"><a href="http://cm.dce.harvard.edu/2014/02/24104/publicationListing.shtml"><i class="icon-external-link"></i>Videos</a></li>
+                    <li class="list-group-item"><a href="http://isites.harvard.edu/icb/icb.do?keyword=k102129&login=yes"><i class="icon-external-link"></i>ISite</a></li>
+                <li class="list-group-item"><h4><i class="icon-external-link icon-large"></i>Other Links</h4></li>
+                    <li class="list-group-item"><a href="http://docs.scipy.org/doc/numpy/reference/"><i class="icon-external-link"></i>Numpy</a></li>
+                    <li class="list-group-item"><a href="http://docs.scipy.org/doc/scipy/reference/"><i class="icon-external-link"></i>Scipy</a></li>
+                    <li class="list-group-item"><a href="http://pandas.pydata.org/pandas-docs/dev/"><i class="icon-external-link"></i>Pandas</a></li>
+                    <li class="list-group-item"><a href="http://matplotlib.org/api/index.html"><i class="icon-external-link"></i>Matplotlib</a></li>
+                    <li class="list-group-item"><a href="https://github.com/pymc-devs/pymc"><i class="icon-external-link"></i>PyMC3</a></li>
+                    <li class="list-group-item"><a href="http://iacs.seas.harvard.edu"><i class="icon-external-link"></i>IACS</a></li>
+        </ul>
+    </section>
+</aside>        </div>
+    </div>
+</div>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="http://iacs-courses.seas.harvard.edu/courses/am207/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="http://iacs-courses.seas.harvard.edu/courses/am207/theme/js/respond.min.js"></script>
+</body>
+</html>
